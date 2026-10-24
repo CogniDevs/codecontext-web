@@ -112,7 +112,12 @@
   }
 
   &.icon-app {
-    mask-image: url("../../public/favicon.svg");
-    -webkit-mask-image: url("../../public/favicon.svg");
+    background-color: transparent;
+    background-image: url("../../public/favicon.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    mask-image: none;
+    -webkit-mask-image: none;
   }
 }
