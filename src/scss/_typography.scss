@@ -1,0 +1,104 @@
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  color: var(--fg-main);
+  line-height: 1.2;
+}
+
+h1 { font-size: 20px; }
+h2 { font-size: 16px; }
+h3 { font-size: 14px; }
+h4 { font-size: 13px; }
+
+p, span, label {
+  color: var(--fg-main);
+}
+
+.text-muted {
+  color: var(--fg-muted);
+}
+
+.text-mono {
+  font-family: var(--font-mono);
+}
+
+code, pre {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 500;
+  background-color: var(--bg-hover);
+  color: var(--fg-main);
+  border: 1px solid var(--border-color);
+
+  &.badge-primary {
+    background-color: var(--primary);
+    color: var(--fg-accent);
+    border-color: var(--primary-hover);
+  }
+
+  &.badge-success {
+    background-color: rgba(137, 209, 133, 0.15);
+    color: var(--success);
+    border-color: var(--success);
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 12px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  background-color: var(--primary);
+  color: var(--fg-accent);
+
+  &:hover:not(:disabled) {
+    background-color: var(--primary-hover);
+  }
+
+  &:disabled {
+    background-color: var(--primary-disabled);
+    color: var(--fg-muted);
+  }
+
+  &.btn-secondary {
+    background-color: var(--bg-surface);
+    color: var(--fg-main);
+    border: 1px solid var(--border-color);
+
+    &:hover:not(:disabled) {
+      background-color: var(--bg-hover);
+      border-color: var(--border-light);
+    }
+  }
+}
+
+.form-control {
+  width: 100%;
+  padding: 6px 10px;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--fg-main);
+  transition: border-color 0.15s ease;
+
+  &:focus {
+    border-color: var(--primary);
+  }
+
+  &::placeholder {
+    color: var(--fg-muted);
+  }
+}

@@ -1,0 +1,116 @@
+@if (isOpen()) {
+  <div class="modal-backdrop" (click)="close()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>
+          {{
+            mode() === "edit"
+              ? "Редактирование скилла ИИ"
+              : "Конструктор скиллов ИИ"
+          }}
+        </h2>
+        <button class="btn-close" type="button" (click)="close()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        @if (mode() === "edit") {
+          <form [formGroup]="form" class="edit-mode-container">
+            <div class="form-group">
+              <label class="form-label" for="promptTitle"
+                >Название скилла:</label
+              >
+              <input
+                id="promptTitle"
+                type="text"
+                class="form-control"
+                formControlName="title"
+              />
+            </div>
+
+            <div class="form-group flex-1">
+              <label class="form-label" for="promptText">
+                Текст системной инструкции для ИИ-ассистента:
+              </label>
+              <textarea
+                id="promptText"
+                class="form-control prompt-textarea text-mono"
+                formControlName="promptText"
+              ></textarea>
+            </div>
+          </form>
+        } @else {
+          <div class="create-mode-container">
+            <form [formGroup]="form">
+              <div class="form-group">
+                <label class="form-label" for="newPromptTitle"
+                  >Название нового скилла:</label
+                >
+                <input
+                  id="newPromptTitle"
+                  type="text"
+                  class="form-control"
+                  placeholder="Например: Python Senior Architect"
+                  formControlName="title"
+                />
+              </div>
+            </form>
+
+            <div class="category-tabs">
+              @for (cat of categories; track cat.key) {
+                <button
+                  type="button"
+                  class="tab-btn"
+                  [class.active]="activeCategory() === cat.key"
+                  (click)="setCategory(cat.key)"
+                >
+                  {{ cat.title }}
+                </button>
+              }
+            </div>
+
+            <div class="rules-list">
+              @for (rule of currentCategoryRules(); track rule.id) {
+                <div
+                  class="rule-card"
+                  [class.active]="rule.active"
+                  (click)="toggleRule(rule.id)"
+                >
+                  <input
+                    type="checkbox"
+                    class="checkbox"
+                    [checked]="rule.active"
+                    (click)="$event.stopPropagation()"
+                    (change)="toggleRule(rule.id)"
+                  />
+                  <div class="rule-details">
+                    <span class="rule-title">{{ rule.title }}</span>
+                    <span class="rule-desc">{{ rule.description }}</span>
+                    <pre class="rule-text text-mono">{{ rule.rule_text }}</pre>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button
+          class="btn"
+          type="button"
+          [disabled]="form.invalid"
+          (click)="onSave()"
+        >
+          {{
+            mode() === "edit"
+              ? "Сохранить изменения"
+              : "Собрать и сохранить скилл"
+          }}
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="close()">
+          Отмена
+        </button>
+      </div>
+    </div>
+  </div>
+}

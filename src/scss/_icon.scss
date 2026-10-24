@@ -1,0 +1,118 @@
+.icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  background-color: currentColor;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+
+  &.icon-folder-open {
+    mask-image: url("../../public/assets/icons/folder-open.svg");
+    -webkit-mask-image: url("../../public/assets/icons/folder-open.svg");
+  }
+
+  &.icon-folder {
+    mask-image: url("../../public/assets/icons/folder.svg");
+    -webkit-mask-image: url("../../public/assets/icons/folder.svg");
+  }
+
+  &.icon-file-search {
+    mask-image: url("../../public/assets/icons/file-search.svg");
+    -webkit-mask-image: url("../../public/assets/icons/file-search.svg");
+  }
+
+  &.icon-save {
+    mask-image: url("../../public/assets/icons/save.svg");
+    -webkit-mask-image: url("../../public/assets/icons/save.svg");
+  }
+
+  &.icon-sun {
+    mask-image: url("../../public/assets/icons/sun.svg");
+    -webkit-mask-image: url("../../public/assets/icons/sun.svg");
+  }
+
+  &.icon-moon {
+    mask-image: url("../../public/assets/icons/moon.svg");
+    -webkit-mask-image: url("../../public/assets/icons/moon.svg");
+  }
+
+  &.icon-add {
+    mask-image: url("../../public/assets/icons/add.svg");
+    -webkit-mask-image: url("../../public/assets/icons/add.svg");
+  }
+
+  &.icon-edit {
+    mask-image: url("../../public/assets/icons/edit.svg");
+    -webkit-mask-image: url("../../public/assets/icons/edit.svg");
+  }
+
+  &.icon-delete {
+    mask-image: url("../../public/assets/icons/delete.svg");
+    -webkit-mask-image: url("../../public/assets/icons/delete.svg");
+  }
+
+  &.icon-settings {
+    mask-image: url("../../public/assets/icons/settings.svg");
+    -webkit-mask-image: url("../../public/assets/icons/settings.svg");
+  }
+
+  &.icon-git {
+    mask-image: url("../../public/assets/icons/git.svg");
+    -webkit-mask-image: url("../../public/assets/icons/git.svg");
+  }
+
+  &.icon-git-diff {
+    mask-image: url("../../public/assets/icons/git-diff.svg");
+    -webkit-mask-image: url("../../public/assets/icons/git-diff.svg");
+  }
+
+  &.icon-imports {
+    mask-image: url("../../public/assets/icons/imports.svg");
+    -webkit-mask-image: url("../../public/assets/icons/imports.svg");
+  }
+
+  &.icon-select-all {
+    mask-image: url("../../public/assets/icons/select-all.svg");
+    -webkit-mask-image: url("../../public/assets/icons/select-all.svg");
+  }
+
+  &.icon-deselect-all {
+    mask-image: url("../../public/assets/icons/deselect-all.svg");
+    -webkit-mask-image: url("../../public/assets/icons/deselect-all.svg");
+  }
+
+  &.icon-expand-all {
+    mask-image: url("../../public/assets/icons/expand-all.svg");
+    -webkit-mask-image: url("../../public/assets/icons/expand-all.svg");
+  }
+
+  &.icon-collapse-all {
+    mask-image: url("../../public/assets/icons/collapse-all.svg");
+    -webkit-mask-image: url("../../public/assets/icons/collapse-all.svg");
+  }
+
+  &.icon-tree-structure {
+    mask-image: url("../../public/assets/icons/tree-structure.svg");
+    -webkit-mask-image: url("../../public/assets/icons/tree-structure.svg");
+  }
+
+  &.icon-refresh {
+    mask-image: url("../../public/assets/icons/refresh.svg");
+    -webkit-mask-image: url("../../public/assets/icons/refresh.svg");
+  }
+
+  &.icon-copy {
+    mask-image: url("../../public/assets/icons/copy.svg");
+    -webkit-mask-image: url("../../public/assets/icons/copy.svg");
+  }
+
+  &.icon-app {
+    mask-image: url("../../public/favicon.svg");
+    -webkit-mask-image: url("../../public/favicon.svg");
+  }
+}

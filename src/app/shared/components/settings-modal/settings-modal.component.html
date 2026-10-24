@@ -1,0 +1,209 @@
+@if (isOpen()) {
+  <div class="modal-backdrop" (click)="close()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Настройки CodeContext</h2>
+        <button class="btn-close" type="button" (click)="close()">✕</button>
+      </div>
+
+      <div class="modal-tabs">
+        @for (tab of tabs; track tab.id) {
+          <button
+            type="button"
+            class="tab-btn"
+            [class.active]="activeTab() === tab.id"
+            (click)="setTab(tab.id)"
+          >
+            {{ tab.label }}
+          </button>
+        }
+      </div>
+
+      <div class="modal-body" [formGroup]="form">
+        @if (activeTab() === "general") {
+          <div class="tab-content">
+            <div class="form-section">
+              <h3>Параметры фильтрации диска</h3>
+              <label class="checkbox-label">
+                <input type="checkbox" formControlName="useGitignore" />
+                <span>Использовать правила .gitignore</span>
+              </label>
+
+              <label class="checkbox-label">
+                <input type="checkbox" formControlName="ignoreBinary" />
+                <span
+                  >Игнорировать бинарные файлы (картинки, архивы,
+                  исполняемые)</span
+                >
+              </label>
+
+              <label class="checkbox-label">
+                <input type="checkbox" formControlName="ignoreLockfiles" />
+                <span>Игнорировать лок-файлы и автогенерацию</span>
+              </label>
+
+              <label class="checkbox-label">
+                <input type="checkbox" formControlName="alwaysSendFullTree" />
+                <span
+                  >Всегда экспортировать полную структуру проекта
+                  (ASCII-дерево)</span
+                >
+              </label>
+            </div>
+
+            <div class="form-section">
+              <h3>Оформление</h3>
+              <div class="form-group">
+                <label class="form-label" for="themeSelect"
+                  >Тема интерфейса:</label
+                >
+                <select
+                  id="themeSelect"
+                  class="form-control"
+                  formControlName="theme"
+                >
+                  <option value="dark">Темная (VS Code)</option>
+                  <option value="light">Светлая</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        }
+
+        @if (activeTab() === "extensions") {
+          <div class="tab-content">
+            <p class="info-text">
+              Выберите файлы, которые нужно выгружать в LLM.<br />
+              <span class="badge-sample active">Синий бадж</span> — СКАНИРУЕТСЯ
+              &nbsp; <span class="badge-sample">Серый бадж</span> — ИГНОРИРУЕТСЯ
+            </p>
+
+            <div class="form-group">
+              <label class="form-label" for="presetSelect">Пресет:</label>
+              <select
+                id="presetSelect"
+                class="form-control"
+                (change)="onPresetChange($event)"
+              >
+                @for (presetName of presetKeys(); track presetName) {
+                  <option [value]="presetName">{{ presetName }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="badges-grid">
+              @for (ext of allExtensions(); track ext) {
+                <button
+                  type="button"
+                  class="badge-btn"
+                  [class.active]="isExtActive(ext)"
+                  (click)="toggleExt(ext)"
+                >
+                  {{ ext }}
+                </button>
+              }
+            </div>
+
+            <div class="add-row">
+              <input
+                type="text"
+                class="form-control"
+                placeholder=".rs, .dart, .swift..."
+                formControlName="newExt"
+                (keydown.enter)="addCustomExtension()"
+              />
+              <button
+                type="button"
+                class="btn btn-secondary"
+                (click)="addCustomExtension()"
+              >
+                Добавить
+              </button>
+            </div>
+          </div>
+        }
+
+        @if (activeTab() === "excludes") {
+          <div class="tab-content">
+            <p class="info-text">
+              Выберите папки, которые нужно безусловно исключить из парсинга.<br />
+              <span class="badge-sample active">Синий бадж</span> — ИГНОРИРУЕТСЯ
+              &nbsp; <span class="badge-sample">Серый бадж</span> — СКАНИРУЕТСЯ
+            </p>
+
+            <div class="badges-grid">
+              @for (folder of allExcludes(); track folder) {
+                <button
+                  type="button"
+                  class="badge-btn"
+                  [class.active]="isExcludeActive(folder)"
+                  (click)="toggleExclude(folder)"
+                >
+                  {{ folder }}
+                </button>
+              }
+            </div>
+
+            <div class="add-row">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="target, temp, logs, out..."
+                formControlName="newExclude"
+                (keydown.enter)="addCustomExclude()"
+              />
+              <button
+                type="button"
+                class="btn btn-secondary"
+                (click)="addCustomExclude()"
+              >
+                Добавить
+              </button>
+            </div>
+          </div>
+        }
+
+        @if (activeTab() === "gitignore") {
+          <div class="tab-content">
+            <p class="info-text">
+              Правила из .gitignore вашего проекта.<br />
+              <span class="badge-sample active">Синий бадж</span> — правило
+              АКТИВНО (файлы скрыты).<br />
+              <span class="badge-sample">Серый бадж</span> — правило ОТКЛЮЧЕНО
+              (файлы будут принудительно добавлены в сканирование).
+            </p>
+
+            @if (projectGitignoreRules().length > 0) {
+              <div class="badges-grid">
+                @for (rule of projectGitignoreRules(); track rule) {
+                  <button
+                    type="button"
+                    class="badge-btn"
+                    [class.active]="isGitignoreRuleActive(rule)"
+                    (click)="toggleGitignoreRule(rule)"
+                  >
+                    {{ rule }}
+                  </button>
+                }
+              </div>
+            } @else {
+              <p class="text-muted">
+                В открытом проекте не найден файл .gitignore или в нем
+                отсутствуют правила.
+              </p>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn" (click)="saveAndClose()">
+          Сохранить настройки
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="close()">
+          Отмена
+        </button>
+      </div>
+    </div>
+  </div>
+}

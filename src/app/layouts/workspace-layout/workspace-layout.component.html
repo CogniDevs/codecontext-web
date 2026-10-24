@@ -1,0 +1,35 @@
+<div
+  class="app-container"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+>
+  <app-header (openSettingsRequested)="onOpenSettings()" />
+
+  <app-paths-panel />
+
+  <main class="app-main">
+    <div class="pane-tree">
+      <app-tree-panel />
+    </div>
+    <div class="pane-controls">
+      <app-control-panel
+        #controlPanel
+        (addPromptRequested)="onAddPrompt()"
+        (editPromptRequested)="onEditPrompt($event)"
+      />
+    </div>
+  </main>
+
+  <app-footer />
+</div>
+
+<app-prompt-modal #promptModal (promptSaved)="onPromptSaved($event)" />
+
+<app-settings-modal #settingsModal />
+
+@if (isDragOver()) {
+  <div class="drag-overlay">
+    <div class="drag-message">Перетащите папку проекта сюда</div>
+  </div>
+}

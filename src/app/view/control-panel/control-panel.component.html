@@ -1,0 +1,193 @@
+<div class="control-panel-container">
+  <div class="panel-section">
+    <div class="group-box">
+      <div class="group-title">Параметры контекста и ИИ</div>
+
+      <div class="form-group">
+        <div class="label-row">
+          <label class="form-label" for="promptSelect"
+            >Шаблон задачи (Скилл):</label
+          >
+          <div class="btn-group">
+            <button
+              type="button"
+              class="btn btn-icon btn-xs"
+              (click)="onAddPrompt()"
+              title="Добавить новый шаблон скилла"
+            >
+              <span class="icon icon-add"></span>
+            </button>
+            <button
+              type="button"
+              class="btn btn-icon btn-xs"
+              (click)="onEditPrompt()"
+              title="Редактировать текущий шаблон скилла"
+            >
+              <span class="icon icon-edit"></span>
+            </button>
+          </div>
+        </div>
+
+        <select
+          id="promptSelect"
+          class="form-control"
+          [value]="selectedPromptKey()"
+          (change)="onPromptChange($event)"
+        >
+          @for (preset of promptPresets(); track preset.key) {
+            <option [value]="preset.key">{{ preset.title }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group budget-group">
+        <label class="form-label" for="budgetSelect"
+          >Лимит токенов (Smart Budget):</label
+        >
+        <select
+          id="budgetSelect"
+          class="form-control"
+          [value]="state.transformOptions().max_token_budget ?? 'null'"
+          (change)="onBudgetChange($event)"
+        >
+          @for (opt of budgetOptions; track opt.label) {
+            <option [value]="opt.value === null ? 'null' : opt.value">
+              {{ opt.label }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <div class="toggles-grid">
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            [checked]="state.transformOptions().xml_format"
+            (change)="updateBooleanOption('xml_format', $event)"
+          />
+          <span>Формат XML</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            [checked]="state.transformOptions().strip_comments"
+            (change)="updateBooleanOption('strip_comments', $event)"
+          />
+          <span>Без комментариев</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            [checked]="state.transformOptions().compress_whitespace"
+            (change)="updateBooleanOption('compress_whitespace', $event)"
+          />
+          <span>Сжать код</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            [checked]="state.transformOptions().sanitize_secrets"
+            (change)="updateBooleanOption('sanitize_secrets', $event)"
+          />
+          <span>Скрыть секреты</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            [checked]="state.transformOptions().skeleton_mode"
+            (change)="updateBooleanOption('skeleton_mode', $event)"
+          />
+          <span>Скелет (сигнатуры)</span>
+        </label>
+
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            [checked]="state.transformOptions().auto_watch ?? true"
+            (change)="updateBooleanOption('auto_watch', $event)"
+          />
+          <span>Авто-слежение</span>
+        </label>
+
+        <label
+          class="checkbox-label"
+          [class.disabled]="!isGitDiffAvailable()"
+          [title]="
+            isGitDiffAvailable()
+              ? 'Сформировать контекст в виде Git Diff патча'
+              : 'Git Diff доступен только в Desktop-режиме'
+          "
+        >
+          <input
+            type="checkbox"
+            [disabled]="!isGitDiffAvailable()"
+            [checked]="state.transformOptions().git_diff_mode"
+            (change)="updateBooleanOption('git_diff_mode', $event)"
+          />
+          <span class="icon icon-git-diff"></span>
+          <span>Git Diff (Дельта)</span>
+        </label>
+      </div>
+
+      @if (isDiffModeActive()) {
+        <div class="form-group extra-option">
+          <label class="form-label" for="contextLinesInput">
+            Строк контекста в Diff (U-lines):
+          </label>
+          <input
+            id="contextLinesInput"
+            type="number"
+            min="0"
+            max="20"
+            class="form-control form-control-sm"
+            [value]="state.transformOptions().git_diff_context_lines"
+            (input)="updateDiffLines($event)"
+          />
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="log-section">
+    <div class="group-box log-box">
+      <div class="group-header">
+        <span class="group-title">Лог работы</span>
+        <button
+          type="button"
+          class="btn-clear-log"
+          (click)="onClearLogs()"
+          title="Очистить журнал логов"
+        >
+          Очистить
+        </button>
+      </div>
+
+      <textarea
+        #logContainer
+        class="form-control log-textarea text-mono"
+        readonly
+        [value]="logsText()"
+      ></textarea>
+    </div>
+  </div>
+
+  <div class="preview-section">
+    <div class="preview-header">
+      <h3>Превью сгенерированного контекста</h3>
+      @if (state.isGenerating()) {
+        <span class="badge">Генерация...</span>
+      }
+    </div>
+
+    <textarea
+      class="form-control preview-textarea text-mono"
+      readonly
+      [value]="state.previewPayload()"
+      placeholder="Скомпилированный контекст проекта появится здесь после выбора файлов..."
+    ></textarea>
+  </div>
+</div>

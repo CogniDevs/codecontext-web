@@ -1,0 +1,45 @@
+<div class="paths-panel-container">
+  <div class="paths-group">
+    <div class="group-title">Папка проекта и экспорт</div>
+
+    <div class="path-row">
+      <label class="path-label" for="projectDirInput">Проект:</label>
+      <input
+        id="projectDirInput"
+        type="text"
+        class="form-control path-input"
+        [value]="state.rootPath()"
+        (input)="onProjectDirChange($event)"
+        placeholder="Выберите папку проекта через кнопку или перетащите в окно..."
+      />
+      <button
+        type="button"
+        class="btn btn-icon"
+        (click)="browseProjectDir()"
+        title="Обзор папки проекта..."
+      >
+        <span class="icon icon-folder-open"></span>
+      </button>
+    </div>
+
+    <div class="path-row">
+      <label class="path-label" for="exportPathInput">Экспорт:</label>
+      <input
+        id="exportPathInput"
+        type="text"
+        class="form-control path-input"
+        [value]="state.exportPath()"
+        (input)="onExportPathChange($event)"
+        placeholder="Путь к итоговому .txt или .xml файлу контекста..."
+      />
+      <button
+        type="button"
+        class="btn btn-icon"
+        (click)="browseExportPath()"
+        title="Выбрать файл экспорта..."
+      >
+        <span class="icon icon-save"></span>
+      </button>
+    </div>
+  </div>
+</div>

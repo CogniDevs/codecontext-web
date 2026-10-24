@@ -1,0 +1,134 @@
+<div class="tree-panel-container" (click)="closeSmartMenu()">
+  <div class="panel-section">
+    <div class="panel-header">
+      <span class="panel-title">Структура:</span>
+      <div class="toolbar-actions" (click)="$event.stopPropagation()">
+        <div class="dropdown-wrapper">
+          <button
+            type="button"
+            class="btn btn-icon btn-smart"
+            (click)="toggleSmartMenu($event)"
+            title="Умный выбор (Git измененные / Локальные импорты)"
+          >
+            <img
+              src="assets/icons/material/git.svg"
+              class="btn-git-img"
+              alt="Git"
+            />
+            <span class="dropdown-arrow">▼</span>
+          </button>
+
+          @if (isSmartMenuOpen()) {
+            <div class="dropdown-menu">
+              <button
+                type="button"
+                class="dropdown-item"
+                [disabled]="!isGitAvailable()"
+                (click)="onSelectGit()"
+              >
+                <img
+                  src="assets/icons/material/git.svg"
+                  class="dropdown-img"
+                  alt="Git"
+                />
+                <span>Только измененные (Git)</span>
+              </button>
+
+              <button
+                type="button"
+                class="dropdown-item"
+                [disabled]="!stateService.focusedPath()"
+                (click)="onSelectDeps()"
+              >
+                <span class="icon icon-imports"></span>
+                <span>Локальные импорты файла</span>
+              </button>
+            </div>
+          }
+        </div>
+
+        <button
+          type="button"
+          class="btn btn-icon"
+          (click)="selectAll(true)"
+          title="Выделить все файлы в проекте"
+        >
+          <span class="icon icon-select-all"></span>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-icon"
+          (click)="selectAll(false)"
+          title="Снять выделение со всех файлов"
+        >
+          <span class="icon icon-deselect-all"></span>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-icon"
+          (click)="setExpandAll(true)"
+          title="Развернуть все папки"
+        >
+          <span class="icon icon-expand-all"></span>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-icon"
+          (click)="setExpandAll(false)"
+          title="Свернуть все папки"
+        >
+          <span class="icon icon-collapse-all"></span>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-icon"
+          (click)="onCopyTree()"
+          title="Скопировать только ASCII-структуру проекта в буфер"
+        >
+          <span class="icon icon-tree-structure"></span>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-icon"
+          (click)="onRefresh()"
+          title="Пересканировать диск"
+        >
+          <span class="icon icon-refresh"></span>
+        </button>
+      </div>
+    </div>
+
+    <input
+      type="text"
+      class="form-control search-input"
+      placeholder="Поиск файлов по имени или расширению..."
+      [value]="searchQuery()"
+      (input)="onSearchInput($event)"
+    />
+  </div>
+
+  <div class="tree-content">
+    @if (fileSystemService.isScanning()) {
+      <div class="tree-state-msg">
+        <span class="spinner"></span>
+        <span>Сканирование проекта...</span>
+      </div>
+    } @else {
+      @if (fileSystemService.rootNode(); as root) {
+        <app-tree-node [node]="root" [searchQuery]="searchQuery()" />
+      } @else {
+        <div class="tree-state-msg text-muted">
+          <p>Проект не выбран.</p>
+          <p class="sub">
+            Нажмите «Обзор...» в панели путей или перетащите папку в окно.
+          </p>
+        </div>
+      }
+    }
+  </div>
+</div>

@@ -1,0 +1,34 @@
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# WASM Core (скачивается из релизов ядра при сборке)
+/public/assets/wasm/
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# Angular & build cache
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+
+# System files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,53 @@
+@if (isVisible()) {
+  <div class="tree-node">
+    <div
+      class="node-row"
+      [class.focused]="isFocused()"
+      [style.paddingLeft.px]="paddingLeft()"
+      (click)="onRowClick()"
+    >
+      @if (node().is_dir) {
+        <button type="button" class="btn-toggle" (click)="toggleExpand($event)">
+          <span class="arrow" [class.expanded]="isExpanded()"></span>
+        </button>
+      } @else {
+        <span class="spacer"></span>
+      }
+
+      <input
+        type="checkbox"
+        class="checkbox"
+        [checked]="selectionState().checked"
+        [indeterminate]="selectionState().indeterminate"
+        (click)="$event.stopPropagation()"
+        (change)="onCheckboxChange($event)"
+      />
+
+      <app-file-icon
+        [name]="node().name"
+        [isDir]="node().is_dir"
+        [isExpanded]="isExpanded()"
+      />
+
+      <span class="node-name" [class.is-dir]="node().is_dir">
+        {{ node().name }}
+      </span>
+
+      @if (!node().is_dir) {
+        <span class="node-size text-muted">{{ formattedSize() }}</span>
+      }
+    </div>
+
+    @if (node().is_dir && isExpanded()) {
+      <div class="children">
+        @for (child of node().children; track child.rel_path) {
+          <app-tree-node
+            [node]="child"
+            [depth]="depth() + 1"
+            [searchQuery]="searchQuery()"
+          />
+        }
+      </div>
+    }
+  </div>
+}
