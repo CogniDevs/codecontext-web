@@ -1,59 +1,51 @@
-# CodecontextWeb
+# CodeContext Web
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.27.
+Веб-приложение для подготовки кодовой базы к отправке в LLM (GPT-4o, Claude, DeepSeek и др.). Индексирует проект, очищает код от лишних данных, удаляет мусорные файлы и пакует выбранные исходники в структурированный XML или TXT с подсчётом токенов.
 
-## Development server
+👉 **[Открыть приложение онлайн](https://cognidevs.github.io/codecontext-web/)**
 
-To start a local development server, run:
+Работает полностью на стороне клиента: файлы не загружаются на сервер, весь парсинг и анализ выполняются локально в браузере через WebAssembly-модуль на Rust.
 
+---
+
+## Функционал
+
+- **Сканирование проектов:** открытие директорий через File System Access API или Drag & Drop, построение дерева файлов с сохранением структуры.
+- **Поддержка .gitignore:** парсинг правил `.gitignore` с возможностью интерактивно включать и отключать конкретные паттерны в настройках.
+- **Фильтрация мусора:** автоматический пропуск бинарных файлов (изображения, архивы, медиа, бинарники) и лок-файлов (`package-lock.json`, `Cargo.lock` и др.).
+- **Скелетонизация кода (AST):** замена тел функций и методов на `...` с сохранением интерфейсов и сигнатур (на базе Tree-sitter).
+- **Очистка комментариев:** удаление однострочных и многострочных комментариев без повреждения строковых литералов.
+- **Маскирование секретов:** поиск и вырезание API-ключей, токенов, приватных ключей и паролей (включая проверку энтропии по Шеннону).
+- **Точный подсчёт токенов:** расчёт BPE-токенов по словарю `cl100k_base` (tiktoken) прямо в браузере.
+- **Трассировка импортов:** определение связанных локальных файлов для выбранного исходника (Python, TypeScript, JavaScript, C/C++, Rust).
+- **Экспорт:** копирование контекста в буфер обмена или сохранение в файл (`.xml` / `.txt`), а также отдельный экспорт только структуры каталогов (ASCII-дерево).
+- **Конструктор системных промптов:** настройка ролей и правил генерации кода с разметкой по XML-тегам.
+
+---
+
+## Режимы работы
+
+1. **Web (Serverless):** работает онлайн на GitHub Pages. Все вычислительные операции выполняет WebAssembly-ядро (`codecontext-core`).
+2. **Desktop (в связке с `codecontext-desktop`):** при работе внутри десктопного WebView автоматически переключается на локальный Rust-сервер (`/api/*`), получая доступ к файловой системе без ограничений браузера, нативному выбору папок и Git Diff.
+
+---
+
+## Локальный запуск
+
+### Требования
+- Node.js 22+
+- npm 10+
+
+### Установка и старт
 ```bash
-ng serve
+# Установка зависимостей
+npm ci
+
+# Запуск dev-сервера (http://localhost:4200)
+npm start
+
+# Сборка production-версии
+npm run build
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+*Примечание:* для работы офлайн-парсинга в веб-режиме файлы `codecontext_core.js` и `codecontext_core_bg.wasm` должны находиться в `public/assets/wasm/` (в CI они подтягиваются автоматически из релизов `codecontext-core`).
