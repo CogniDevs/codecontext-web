@@ -8,11 +8,13 @@ import {
 import { firstValueFrom } from 'rxjs';
 
 import { ApiService } from '@services/api.service';
+import { FileSystemService } from '@services/file-system.service';
 import { PlatformService } from '@services/platform.service';
 import { StateService } from '@services/state.service';
 import {
   extractErrorMessage,
   hasSaveFilePicker,
+  sanitizeProjectContextFileName,
 } from '@core/utils/type-guards';
 
 @Component({
@@ -25,6 +27,7 @@ import {
 export class FooterComponent {
   protected readonly state = inject(StateService);
   protected readonly platform = inject(PlatformService);
+  private readonly fileSystem = inject(FileSystemService);
   private readonly api = inject(ApiService);
 
   readonly copyStatus = signal<string>('Скопировать в буфер');
@@ -35,9 +38,14 @@ export class FooterComponent {
   });
 
   readonly downloadFileName = computed<string>(() => {
-    return this.state.transformOptions().xml_format
-      ? 'code_context.xml'
-      : 'code_context.txt';
+    const rawName =
+      this.fileSystem.currentProjectName() || this.state.rootPath() || 'code';
+
+    const normalized = rawName.trim().replace(/\\/g, '/').replace(/\/+$/, '');
+    const segments = normalized.split('/').filter(Boolean);
+    const projectName = segments.pop() || normalized;
+
+    return sanitizeProjectContextFileName(projectName);
   });
 
   readonly saveButtonText = computed<string>(() => {
@@ -45,9 +53,7 @@ export class FooterComponent {
     if (status) {
       return status;
     }
-    return this.state.transformOptions().xml_format
-      ? 'Записать в XML'
-      : 'Записать в TXT';
+    return 'Записать в файл';
   });
 
   protected async copyToClipboard(): Promise<void> {
@@ -71,22 +77,19 @@ export class FooterComponent {
       return;
     }
 
+    const defaultName = this.downloadFileName();
+
     if (this.platform.isDesktop()) {
-      let targetPath = this.state.exportPath();
-      if (!targetPath) {
-        const ext = this.state.transformOptions().xml_format ? '.xml' : '.txt';
-        const defaultName = `code_context${ext}`;
-        try {
-          const res = await firstValueFrom(
-            this.api.selectSaveFile(defaultName, ext),
-          );
-          if (res.success && res.path) {
-            targetPath = res.path;
-            this.state.setExportPath(targetPath);
-          }
-        } catch {
-          targetPath = '';
+      let targetPath = '';
+      try {
+        const res = await firstValueFrom(
+          this.api.selectSaveFile(defaultName, '.txt'),
+        );
+        if (res.success && res.path) {
+          targetPath = res.path;
         }
+      } catch {
+        targetPath = '';
       }
 
       if (targetPath) {
@@ -102,15 +105,11 @@ export class FooterComponent {
             alert(`Ошибка записи файла: ${msg}`);
           },
         });
-        return;
       }
+      return;
     }
 
-    const ext = this.state.transformOptions().xml_format ? '.xml' : '.txt';
-    const defaultName = `code_context${ext}`;
-    const mimeType = this.state.transformOptions().xml_format
-      ? 'application/xml;charset=utf-8'
-      : 'text/plain;charset=utf-8';
+    const mimeType = 'text/plain;charset=utf-8';
 
     if (hasSaveFilePicker(window)) {
       try {
@@ -118,8 +117,8 @@ export class FooterComponent {
           suggestedName: defaultName,
           types: [
             {
-              description: ext === '.xml' ? 'XML Document' : 'Text Document',
-              accept: { [mimeType]: [ext] },
+              description: 'Text Document',
+              accept: { [mimeType]: ['.txt'] },
             },
           ],
         });
@@ -142,10 +141,10 @@ export class FooterComponent {
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = this.downloadFileName();
+    anchor.download = defaultName;
     anchor.click();
     URL.revokeObjectURL(url);
-    this.state.appendLog(`Файл сохранен: ${this.downloadFileName()}`);
+    this.state.appendLog(`Файл сохранен: ${defaultName}`);
     this.saveStatus.set('Сохранено! ✓');
     setTimeout(() => this.saveStatus.set(''), 2000);
   }

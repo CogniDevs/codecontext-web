@@ -1,6 +1,6 @@
 <div class="paths-panel-container">
   <div class="paths-group">
-    <div class="group-title">Папка проекта и экспорт</div>
+    <div class="group-title">Папка проекта</div>
 
     <div class="path-row">
       <label class="path-label" for="projectDirInput">Проект:</label>
@@ -19,26 +19,6 @@
         title="Обзор папки проекта..."
       >
         <span class="icon icon-folder-open"></span>
-      </button>
-    </div>
-
-    <div class="path-row">
-      <label class="path-label" for="exportPathInput">Экспорт:</label>
-      <input
-        id="exportPathInput"
-        type="text"
-        class="form-control path-input"
-        [value]="state.exportPath()"
-        (input)="onExportPathChange($event)"
-        placeholder="Путь к итоговому .txt или .xml файлу контекста..."
-      />
-      <button
-        type="button"
-        class="btn btn-icon"
-        (click)="browseExportPath()"
-        title="Выбрать файл экспорта..."
-      >
-        <span class="icon icon-save"></span>
       </button>
     </div>
   </div>

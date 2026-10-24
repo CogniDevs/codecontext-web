@@ -33,12 +33,18 @@ export class FileSystemService {
 
   private readonly fileContentCache = new Map<string, string>();
 
+  private extractBaseName(path: string): string {
+    const normalized = path.trim().replace(/\\/g, '/').replace(/\/+$/, '');
+    const segments = normalized.split('/').filter(Boolean);
+    return segments.pop() || normalized;
+  }
+
   setRootNode(node: FileNode | null, projectName?: string): void {
     this.rootNode.set(node);
     if (projectName) {
-      this.currentProjectName.set(projectName);
+      this.currentProjectName.set(this.extractBaseName(projectName));
     } else if (node) {
-      this.currentProjectName.set(node.name);
+      this.currentProjectName.set(this.extractBaseName(node.name));
     } else {
       this.currentProjectName.set('');
     }
@@ -57,7 +63,7 @@ export class FileSystemService {
 
         this.isScanning.set(true);
         await this.wasmService.init();
-        this.currentProjectName.set(handle.name);
+        this.currentProjectName.set(this.extractBaseName(handle.name));
 
         const { effectiveOptions, gitignoreRules } =
           await this.prepareScanOptions(handle, options);
@@ -102,7 +108,7 @@ export class FileSystemService {
       const firstPath =
         firstFile?.webkitRelativePath || firstFile?.name || 'project';
       const rootName = firstPath.split('/')[0] || 'project';
-      this.currentProjectName.set(rootName);
+      this.currentProjectName.set(this.extractBaseName(rootName));
 
       const gitignoreFile = fileArray.find(
         (f) =>
@@ -192,7 +198,7 @@ export class FileSystemService {
       await this.wasmService.init();
 
       if (rootEntry) {
-        this.currentProjectName.set(rootEntry.name);
+        this.currentProjectName.set(this.extractBaseName(rootEntry.name));
         const { effectiveOptions, gitignoreRules } =
           await this.prepareScanOptionsForWebkitEntry(rootEntry, options);
         const root = await this.scanWebkitEntry(

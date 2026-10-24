@@ -158,3 +158,26 @@ export function extractErrorMessage(error: unknown): string {
   }
   return String(error);
 }
+
+export function sanitizeProjectContextFileName(
+  projectName?: string | null,
+): string {
+  const normalized = (projectName || '')
+    .trim()
+    .replace(/\\/g, '/')
+    .replace(/\/+$/, '');
+
+  const segments = normalized.split('/').filter(Boolean);
+  const baseFolder = segments.pop() || normalized;
+
+  const cleaned = baseFolder
+    .toLowerCase()
+    .replace(/[\/\\:*?"<>|#%&{}\\<>*?/$!'":@+`|=]/g, '')
+    .replace(/[\s\-.]+/g, '_')
+    .replace(/_{2,}/g, '_')
+    .replace(/^_+|_+$/g, '');
+
+  const truncated = cleaned.slice(0, 50);
+  const base = truncated || 'code';
+  return `${base}_context.txt`;
+}

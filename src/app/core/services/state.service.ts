@@ -53,6 +53,7 @@ import {
   isRecord,
   isString,
   isStringArray,
+  sanitizeProjectContextFileName,
 } from '@core/utils/type-guards';
 
 @Injectable({
@@ -301,22 +302,37 @@ export class StateService {
       this.rootPath.set('');
       this.fileSizesMap.clear();
       this.projectGitignoreRules.set([]);
+      this.exportPath.set('');
       return;
     }
 
     this.fileSizesMap.clear();
     this.cacheFileSizes(node);
 
-    this.fileSystem.setRootNode(node, rootPath);
+    const effectivePath =
+      rootPath && this.isAbsoluteDiskPath(rootPath)
+        ? rootPath.trim().replace(/\\/g, '/').replace(/\/+$/, '')
+        : (node.full_path || node.name)
+            .trim()
+            .replace(/\\/g, '/')
+            .replace(/\/+$/, '');
+
+    const folderName =
+      effectivePath.split('/').filter(Boolean).pop() || node.name;
+    this.fileSystem.setRootNode(node, folderName);
+
+    const sanitizedName = sanitizeProjectContextFileName(folderName);
+
     if (rootPath && this.isAbsoluteDiskPath(rootPath)) {
       this.rootPath.set(rootPath);
-      const defaultExport = `${rootPath.replace(/[\\/]$/, '')}/code_context.txt`;
+      const defaultExport = `${effectivePath}/${sanitizedName}`;
       this.exportPath.set(defaultExport);
       this.appendLog(`Rust Scan: ${rootPath}`);
       this.fetchProjectGitignoreRules(rootPath);
     } else {
       this.rootPath.set(node.full_path || node.name);
-      this.appendLog(`Web Scan: ${node.name}`);
+      this.exportPath.set(sanitizedName);
+      this.appendLog(`Web Scan: ${folderName}`);
     }
   }
 
