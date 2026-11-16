@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - master
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 permissions:
@@ -59,12 +61,20 @@ jobs:
           cd dist/codecontext-web/browser
           zip -r ../../../frontend-dist.zip .
 
-      - name: Release Dist for Desktop
+      - name: Release Dist for Desktop (Rolling latest-ui)
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
           tag_name: latest-ui
           name: Latest UI Build for Desktop
+          files: frontend-dist.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release Dist for Tagged Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
           files: frontend-dist.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
